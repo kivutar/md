@@ -1,5 +1,6 @@
 #include <math.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include "u.h"
 #include "compat.h"
 #include "dat.h"

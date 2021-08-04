@@ -2,6 +2,7 @@
 
 #define sysfatal printf
 #define print printf
+#define seek lseek
 #define nil NULL
 #define OWRITE O_WRONLY
 #define ORDWR O_RDWR
@@ -12,6 +13,5 @@
 u64int keys, keys2;
 int trace, paused;
 int savereq, loadreq;
-//QLock pauselock;
 int scale, fixscale, warp10;
 uchar *pic;

@@ -1,4 +1,9 @@
 #include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "libretro.h"
 #include "u.h"
 #include "compat.h"
 #include "dat.h"
@@ -11,6 +16,21 @@ u32int sramctl, nsram, sram0, sram1;
 int savefd = -1;
 
 int dmaclock, vdpclock, z80clock, audioclock, ymclock, saveclock;
+
+int
+readn(void *f, void *data, int len)
+{
+	uchar *p, *e;
+
+	p = data;
+	e = p + len;
+	while(p < e){
+		if((len = read(f, p, e - p)) <= 0)
+			break;
+		p += len;
+	}
+	return p - (uchar*)data;
+}
 
 void
 flushram(void)
@@ -27,13 +47,13 @@ loadbat(char *file)
 	
 	strncpy(buf, file, sizeof buf - 5);
 	strcat(buf, ".sav");
-	savefd = create(buf, ORDWR | OEXCL, 0666);
-	if(savefd < 0)
-		savefd = open(buf, ORDWR);
-	if(savefd < 0)
-		print("open: %r\n");
-	else
-		readn(savefd, sram, nsram);
+	// savefd = create(buf, ORDWR | OEXCL);
+	// if(savefd < 0)
+	// 	savefd = open(buf, ORDWR);
+	// if(savefd < 0)
+	// 	print("open: %r\n");
+	// else
+	// 	readn(savefd, sram, nsram);
 }
 
 static void
@@ -99,7 +119,7 @@ loadrom(char *file)
 	}
 }
 
-void
+/*void
 usage(void)
 {
 	fprint(2, "usage: %s [-a] [-x scale] rom\n", argv0);
@@ -137,51 +157,141 @@ threadmain(int argc, char **argv)
 	vdpmode();
 	ymreset();
 	for(;;){
-		if(paused != 0){
-			qlock(&pauselock);
-			qunlock(&pauselock);
-		}
-		if(dma != 1){
-			t = step() * CPUDIV;
-			if(dma != 0)
-				dmastep();
-		}else{
-			t = CPUDIV;
-			dmastep();
-		}
-		z80clock -= t;
-		vdpclock -= t;
-		audioclock += t;
-		ymclock += t;
-
-		while(vdpclock < 0){
-			vdpstep();
-			vdpclock += 8;
-		}
-		while(z80clock < 0)
-			z80clock += z80step() * Z80DIV;
-		while(audioclock >= SAMPDIV){
-			audiosample();
-			audioclock -= SAMPDIV;
-		}
-		while(ymclock >= YMDIV){
-			ymstep();
-			ymclock -= YMDIV;
-		}
-		if(saveclock > 0){
-			saveclock -= t;
-			if(saveclock <= 0){
-				saveclock = 0;
-				flushram();
-			}
-		}
+		retro_run();
 	}
-}
+}*/
 
 void
 flush(void)
 {
-	flushmouse(1);
-	flushscreen();
-	flushaudio(audioout);
+	// flushmouse(1);
+	// flushscreen();
+	// flushaudio(audioout);
 }
+
+int t;
+
+void
+retro_init(void)
+{
+	// initemu(320, 224, 4, XRGB32, 1, nil);
+	// regkey("a", 'c', 1<<5);
+	// regkey("b", 'x', 1<<4);
+	// regkey("y", 'z', 1<<12);
+	// regkey("start", '\n', 1<<13);
+	// regkey("up", Kup, 0x101);
+	// regkey("down", Kdown, 0x202);
+	// regkey("left", Kleft, 1<<2);
+	// regkey("right", Kright, 1<<3);
+}
+
+void
+retro_get_system_info(struct retro_system_info *info)
+{
+	memset(info, 0, sizeof(*info));
+	info->library_name = "md";
+	info->library_version = "1.0";
+	info->need_fullpath = true;
+	info->valid_extensions = "md";
+}
+
+void
+retro_get_system_av_info(struct retro_system_av_info *info)
+{
+	info->timing.fps = 60.0;
+	info->timing.sample_rate = 44100.0;
+
+	info->geometry.base_width = 320;
+	info->geometry.base_height = 224;
+	info->geometry.max_width = 320;
+	info->geometry.max_height = 240;
+	info->geometry.aspect_ratio = 4.0 / 3.0;
+}
+
+unsigned
+retro_api_version(void)
+{
+	return RETRO_API_VERSION;
+}
+
+void
+retro_set_controller_port_device(unsigned port, unsigned device)
+{
+	(void)port;
+	(void)device;
+}
+
+size_t
+retro_get_memory_size(unsigned id)
+{
+	(void)id;
+	return 0;
+}
+
+void *
+retro_get_memory_data(unsigned id)
+{
+	(void)id;
+	return NULL;
+}
+
+bool
+retro_load_game(const struct retro_game_info *game)
+{
+	loadrom("/Users/kivutar/md/won3.md");
+	cpureset();
+	vdpmode();
+	ymreset();
+	return true;
+}
+
+void
+retro_deinit(void)
+{
+}
+
+void
+retro_run(void)
+{
+	if(dma != 1){
+		t = step() * CPUDIV;
+		if(dma != 0)
+			dmastep();
+	}else{
+		t = CPUDIV;
+		dmastep();
+	}
+	z80clock -= t;
+	vdpclock -= t;
+	audioclock += t;
+	ymclock += t;
+
+	while(vdpclock < 0){
+		vdpstep();
+		vdpclock += 8;
+	}
+	while(z80clock < 0)
+		z80clock += z80step() * Z80DIV;
+	while(audioclock >= SAMPDIV){
+		audiosample();
+		audioclock -= SAMPDIV;
+	}
+	while(ymclock >= YMDIV){
+		ymstep();
+		ymclock -= YMDIV;
+	}
+	if(saveclock > 0){
+		saveclock -= t;
+		if(saveclock <= 0){
+			saveclock = 0;
+			flushram();
+		}
+	}
+}
+
+void retro_set_environment(retro_environment_t envcb) {}
+void retro_set_video_refresh(retro_video_refresh_t refreshcb) {}
+void retro_set_audio_sample(retro_audio_sample_t audiocb) {}
+void retro_set_audio_sample_batch(retro_audio_sample_batch_t audiobatchcb) {}
+void retro_set_input_poll(retro_input_poll_t pollcb) {}
+void retro_set_input_state(retro_input_state_t inputcb) {}
