@@ -11,7 +11,6 @@
 #define	nelem(x) (sizeof(x)/sizeof((x)[0]))
 
 u64int keys, keys2;
-int trace, paused;
-int savereq, loadreq;
-int scale, fixscale, warp10;
+int trace;
+int scale, warp10;
 uchar *pic;
