@@ -9,6 +9,8 @@
 #include "dat.h"
 #include "fns.h"
 
+static retro_video_refresh_t video_cb;
+
 u16int *prg;
 int nprg;
 u8int *sram;
@@ -238,16 +240,13 @@ retro_get_memory_data(unsigned id)
 bool
 retro_load_game(const struct retro_game_info *game)
 {
+	scale = 1;
+	pic = malloc(320 * 224 * 4 * scale);
 	loadrom("/Users/kivutar/md/won3.md");
 	cpureset();
 	vdpmode();
 	ymreset();
 	return true;
-}
-
-void
-retro_deinit(void)
-{
 }
 
 void
@@ -287,10 +286,18 @@ retro_run(void)
 			flushram();
 		}
 	}
+	video_cb(pic, 320, 240, 1440);
 }
 
+void
+retro_set_video_refresh(retro_video_refresh_t cb)
+{
+	video_cb = cb;
+}
+
+void retro_unload_game(void) {}
+void retro_deinit(void) {}
 void retro_set_environment(retro_environment_t envcb) {}
-void retro_set_video_refresh(retro_video_refresh_t refreshcb) {}
 void retro_set_audio_sample(retro_audio_sample_t audiocb) {}
 void retro_set_audio_sample_batch(retro_audio_sample_batch_t audiobatchcb) {}
 void retro_set_input_poll(retro_input_poll_t pollcb) {}
