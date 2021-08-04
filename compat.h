@@ -12,5 +12,5 @@
 
 u64int keys, keys2;
 int trace;
-int scale, warp10;
+int warp10;
 uchar *pic;

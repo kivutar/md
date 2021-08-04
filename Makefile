@@ -8,7 +8,7 @@ OBJ = cpu.o mem.o vdp.o z80.o ym.o md.o
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(TARGET): $(OBJ)
-	$(CC) $(SHARED) -o $@ $^ $(CFLAGS)
+	$(CC) $(SHARED) -fPIC -o $@ $^ $(CFLAGS)
 
 clean:
 	rm *.o md_libretro.*

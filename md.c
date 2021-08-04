@@ -169,7 +169,6 @@ flush(void)
 {
 	// flushmouse(1);
 	// flushscreen();
-	printf("flush\n");
 	// flushaudio(audioout);
 }
 
@@ -178,15 +177,6 @@ int t;
 void
 retro_init(void)
 {
-	// initemu(320, 224, 4, XRGB32, 1, nil);
-	// regkey("a", 'c', 1<<5);
-	// regkey("b", 'x', 1<<4);
-	// regkey("y", 'z', 1<<12);
-	// regkey("start", '\n', 1<<13);
-	// regkey("up", Kup, 0x101);
-	// regkey("down", Kdown, 0x202);
-	// regkey("left", Kleft, 1<<2);
-	// regkey("right", Kright, 1<<3);
 }
 
 void
@@ -218,27 +208,6 @@ retro_api_version(void)
 	return RETRO_API_VERSION;
 }
 
-void
-retro_set_controller_port_device(unsigned port, unsigned device)
-{
-	(void)port;
-	(void)device;
-}
-
-size_t
-retro_get_memory_size(unsigned id)
-{
-	(void)id;
-	return 0;
-}
-
-void *
-retro_get_memory_data(unsigned id)
-{
-	(void)id;
-	return NULL;
-}
-
 bool
 retro_load_game(const struct retro_game_info *game)
 {
@@ -246,8 +215,7 @@ retro_load_game(const struct retro_game_info *game)
 	if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
 		return false;
 
-	scale = 1;
-	pic = malloc(320 * 224 * 4 * scale);
+	pic = malloc(320 * 224 * 4);
 	loadrom(game->path);
 	cpureset();
 	vdpmode();
@@ -306,6 +274,9 @@ retro_set_environment(retro_environment_t cb) {
 	environ_cb = cb;
 }
 
+void retro_set_controller_port_device(unsigned port, unsigned device) {}
+size_t retro_get_memory_size(unsigned id) { return 0; }
+void * retro_get_memory_data(unsigned id) { return NULL; }
 void retro_reset(void) {}
 void retro_unload_game(void) {}
 void retro_deinit(void) {}
