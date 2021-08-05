@@ -21,7 +21,7 @@ int savefd = -1;
 int dmaclock, vdpclock, z80clock, audioclock, ymclock, saveclock;
 
 int
-readn(void *f, void *data, int len)
+readn(int f, void *data, int len)
 {
 	uchar *p, *e;
 
