@@ -19,6 +19,7 @@ int nprg;
 u8int *sram;
 u32int sramctl, nsram, sram0, sram1;
 int savefd = -1;
+int doflush = 0;
 
 int dmaclock, vdpclock, z80clock, audioclock, ymclock, saveclock;
 
@@ -78,7 +79,7 @@ loadrom(const char *file)
 		sysfatal("invalid rom\n");
 	v = hdr[0x1a0] << 24 | hdr[0x1a1] << 16 | hdr[0x1a2] << 8 | hdr[0x1a3];
 	if(v != 0)
-		sysfatal("rom starts at nonzero address");
+		sysfatal("rom starts at nonzero address\n");
 	v = hdr[0x1a4] << 24 | hdr[0x1a5] << 16 | hdr[0x1a6] << 8 | hdr[0x1a7];
 	nprg = v = v+2 & ~1;
 	if(nprg == 0)
@@ -166,14 +167,6 @@ threadmain(int argc, char **argv)
 	}
 }*/
 
-void
-flush(void)
-{
-	// flushmouse(1);
-	// flushscreen();
-	// flushaudio(audioout);
-}
-
 int t;
 
 void
@@ -230,50 +223,61 @@ retro_run(void)
 {
 	input_poll_cb();
 
-	if(dma != 1){
-		t = step() * CPUDIV;
-		if(dma != 0)
+	while(!doflush){
+		if(dma != 1){
+			t = step() * CPUDIV;
+			if(dma != 0)
+				dmastep();
+		}else{
+			t = CPUDIV;
 			dmastep();
-	}else{
-		t = CPUDIV;
-		dmastep();
-	}
-	z80clock -= t;
-	vdpclock -= t;
-	audioclock += t;
-	ymclock += t;
+		}
+		z80clock -= t;
+		vdpclock -= t;
+		audioclock += t;
+		ymclock += t;
 
-	while(vdpclock < 0){
-		vdpstep();
-		vdpclock += 8;
-	}
-	while(z80clock < 0)
-		z80clock += z80step() * Z80DIV;
-	while(audioclock >= SAMPDIV){
-		audiosample();
-		audioclock -= SAMPDIV;
-	}
-	while(ymclock >= YMDIV){
-		ymstep();
-		ymclock -= YMDIV;
-	}
-	if(saveclock > 0){
-		saveclock -= t;
-		if(saveclock <= 0){
-			saveclock = 0;
-			flushram();
+		while(vdpclock < 0){
+			vdpstep();
+			vdpclock += 8;
+		}
+		while(z80clock < 0)
+			z80clock += z80step() * Z80DIV;
+		while(audioclock >= SAMPDIV){
+			audiosample();
+			audioclock -= SAMPDIV;
+		}
+		while(ymclock >= YMDIV){
+			ymstep();
+			ymclock -= YMDIV;
+		}
+		if(saveclock > 0){
+			saveclock -= t;
+			if(saveclock <= 0){
+				saveclock = 0;
+				flushram();
+			}
 		}
 	}
 	video_cb(pic, 320, 224, 320*4);
+	doflush = 0;
 }
 
 void
-retro_set_input_poll(retro_input_poll_t cb) {
+flush(void)
+{
+	doflush = 1;
+}
+
+void
+retro_set_input_poll(retro_input_poll_t cb)
+{
 	input_poll_cb = cb;
 }
 
 void
-retro_set_input_state(retro_input_state_t cb) {
+retro_set_input_state(retro_input_state_t cb)
+{
 	input_state_cb = cb;
 }
 
