@@ -44,7 +44,7 @@ flushram(void)
 }
 
 static void
-loadbat(char *file)
+loadbat(const char *file)
 {
 	static char buf[512];
 	
@@ -60,7 +60,7 @@ loadbat(char *file)
 }
 
 static void
-loadrom(char *file)
+loadrom(const char *file)
 {
 	static uchar hdr[512], buf[4096];
 	u32int v;
@@ -69,28 +69,28 @@ loadrom(char *file)
 	
 	fd = open(file, OREAD);
 	if(fd < 0)
-		sysfatal("open: %r");
+		sysfatal("open\n");
 	if(readn(fd, hdr, 512) < 512)
-		sysfatal("read: %r");
+		sysfatal("read\n");
 	if(memcmp(hdr + 0x100, "SEGA MEGA DRIVE ", 16) != 0 && memcmp(hdr + 0x100, "SEGA GENESIS    ", 16) != 0)
-		sysfatal("invalid rom");
+		sysfatal("invalid rom\n");
 	v = hdr[0x1a0] << 24 | hdr[0x1a1] << 16 | hdr[0x1a2] << 8 | hdr[0x1a3];
 	if(v != 0)
 		sysfatal("rom starts at nonzero address");
 	v = hdr[0x1a4] << 24 | hdr[0x1a5] << 16 | hdr[0x1a6] << 8 | hdr[0x1a7];
 	nprg = v = v+2 & ~1;
 	if(nprg == 0)
-		sysfatal("invalid rom");
+		sysfatal("invalid rom\n");
 	p = prg = malloc(v);
 	if(prg == nil)
-		sysfatal("malloc: %r");
+		sysfatal("malloc\n");
 	seek(fd, 0, 0);
 	while(v != 0){
 		rc = readn(fd, buf, sizeof buf);
 		if(rc == 0)
 			break;
 		if(rc < 0)
-			sysfatal("read: %r");
+			sysfatal("read\n");
 		if(rc > v)
 			rc = v;
 		for(i = 0; i < rc; i += 2)
@@ -113,7 +113,7 @@ loadrom(char *file)
 				nsram >>= 1;
 			sram = malloc(nsram);
 			if(sram == nil)
-				sysfatal("malloc: %r");
+				sysfatal("malloc\n");
 			if((sramctl & BATTERY) != 0){
 				loadbat(file);
 				atexit(flushram);

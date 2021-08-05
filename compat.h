@@ -12,5 +12,6 @@
 
 u64int keys, keys2;
 int trace;
+int savereq, loadreq;
 int warp10;
 uchar *pic;

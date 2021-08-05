@@ -13,4 +13,5 @@ typedef int32_t s32int;
 typedef int64_t s64int;
 
 typedef long long vlong;
+typedef unsigned long ulong;
 typedef unsigned long long uvlong;
