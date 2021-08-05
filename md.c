@@ -9,6 +9,8 @@
 #include "dat.h"
 #include "fns.h"
 
+static retro_input_state_t input_state_cb;
+static retro_input_poll_t input_poll_cb;
 static retro_video_refresh_t video_cb;
 static retro_environment_t environ_cb;
 
@@ -226,6 +228,8 @@ retro_load_game(const struct retro_game_info *game)
 void
 retro_run(void)
 {
+	input_poll_cb();
+
 	if(dma != 1){
 		t = step() * CPUDIV;
 		if(dma != 0)
@@ -264,6 +268,16 @@ retro_run(void)
 }
 
 void
+retro_set_input_poll(retro_input_poll_t cb) {
+	input_poll_cb = cb;
+}
+
+void
+retro_set_input_state(retro_input_state_t cb) {
+	input_state_cb = cb;
+}
+
+void
 retro_set_video_refresh(retro_video_refresh_t cb)
 {
 	video_cb = cb;
@@ -280,10 +294,8 @@ void * retro_get_memory_data(unsigned id) { return NULL; }
 void retro_reset(void) {}
 void retro_unload_game(void) {}
 void retro_deinit(void) {}
-void retro_set_audio_sample(retro_audio_sample_t audiocb) {}
-void retro_set_audio_sample_batch(retro_audio_sample_batch_t audiobatchcb) {}
-void retro_set_input_poll(retro_input_poll_t pollcb) {}
-void retro_set_input_state(retro_input_state_t inputcb) {}
+void retro_set_audio_sample(retro_audio_sample_t cb) {}
+void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb) {}
 size_t retro_serialize_size(void) { return 0; }
 bool retro_serialize(void *data, size_t size) { return false; }
 bool retro_unserialize(const void *data, size_t size) { return false; }
