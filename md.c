@@ -14,6 +14,7 @@ static retro_input_poll_t input_poll_cb;
 static retro_video_refresh_t video_cb;
 static retro_environment_t environ_cb;
 
+int t;
 u16int *prg;
 int nprg;
 u8int *sram;
@@ -124,50 +125,6 @@ loadrom(const char *file)
 		}
 	}
 }
-
-/*void
-usage(void)
-{
-	fprint(2, "usage: %s [-a] [-x scale] rom\n", argv0);
-	exits("usage");
-}
-
-void
-threadmain(int argc, char **argv)
-{
-	int t;
-
-	ARGBEGIN{
-	case 'a':
-		initaudio();
-		break;
-	case 'x':
-		fixscale = strtol(EARGF(usage()), nil, 0);
-		break;
-	default:
-		usage();
-	} ARGEND;
-	if(argc < 1)
-		usage();
-	loadrom(*argv);
-	initemu(320, 224, 4, XRGB32, 1, nil);
-	regkey("a", 'c', 1<<5);
-	regkey("b", 'x', 1<<4);
-	regkey("y", 'z', 1<<12);
-	regkey("start", '\n', 1<<13);
-	regkey("up", Kup, 0x101);
-	regkey("down", Kdown, 0x202);
-	regkey("left", Kleft, 1<<2);
-	regkey("right", Kright, 1<<3);
-	cpureset();
-	vdpmode();
-	ymreset();
-	for(;;){
-		retro_run();
-	}
-}*/
-
-int t;
 
 void
 retro_init(void)
