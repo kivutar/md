@@ -13,6 +13,8 @@ static retro_input_state_t input_state_cb;
 static retro_input_poll_t input_poll_cb;
 static retro_video_refresh_t video_cb;
 static retro_environment_t environ_cb;
+static retro_audio_sample_t audio_sample_cb;
+retro_audio_sample_batch_t audio_sample_batch_cb;
 
 int t;
 u16int *prg;
@@ -145,7 +147,7 @@ void
 retro_get_system_av_info(struct retro_system_av_info *info)
 {
 	info->timing.fps = 60.0;
-	info->timing.sample_rate = 44100.0;
+	info->timing.sample_rate = RATE;
 
 	info->geometry.base_width = 320;
 	info->geometry.base_height = 224;
@@ -169,6 +171,7 @@ retro_load_game(const struct retro_game_info *game)
 
 	pic = malloc(320 * 224 * 4);
 	loadrom(game->path);
+	initaudio();
 	cpureset();
 	vdpmode();
 	ymreset();
@@ -217,6 +220,7 @@ retro_run(void)
 		}
 	}
 	video_cb(pic, 320, 224, 320*4);
+	audioout();
 	doflush = 0;
 }
 
@@ -245,8 +249,21 @@ retro_set_video_refresh(retro_video_refresh_t cb)
 }
 
 void
-retro_set_environment(retro_environment_t cb) {
+retro_set_environment(retro_environment_t cb)
+{
 	environ_cb = cb;
+}
+
+void
+retro_set_audio_sample(retro_audio_sample_t cb)
+{
+	audio_sample_cb = cb;
+}
+
+void
+retro_set_audio_sample_batch(retro_audio_sample_batch_t cb)
+{
+	audio_sample_batch_cb = cb;
 }
 
 void retro_set_controller_port_device(unsigned port, unsigned device) {}
@@ -255,8 +272,6 @@ void * retro_get_memory_data(unsigned id) { return NULL; }
 void retro_reset(void) {}
 void retro_unload_game(void) {}
 void retro_deinit(void) {}
-void retro_set_audio_sample(retro_audio_sample_t cb) {}
-void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb) {}
 size_t retro_serialize_size(void) { return 0; }
 bool retro_serialize(void *data, size_t size) { return false; }
 bool retro_unserialize(const void *data, size_t size) { return false; }

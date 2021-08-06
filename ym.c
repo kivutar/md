@@ -1,6 +1,7 @@
 #include <math.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "libretro.h"
 #include "u.h"
 #include "compat.h"
 #include "dat.h"
@@ -427,6 +428,8 @@ audiosample(void)
 	}
 }
 
+extern retro_audio_sample_batch_t audio_sample_batch_cb;
+
 int
 audioout(void)
 {
@@ -436,7 +439,9 @@ audioout(void)
 		return -1;
 	if(sbufp == sbuf)
 		return 0;
-	rc = warp10 ? (sbufp - sbuf) * 2 : write(fd, sbuf, (sbufp - sbuf) * 2);
+	//rc = warp10 ? (sbufp - sbuf) * 2 : write(fd, sbuf, (sbufp - sbuf) * 2);
+	audio_sample_batch_cb(sbuf, (sbufp - sbuf) / 2);
+	rc = (sbufp - sbuf) * 2;
 	if(rc > 0)
 		sbufp -= (rc+1)/2;
 	if(sbufp < sbuf)
@@ -447,8 +452,8 @@ audioout(void)
 void
 initaudio(void)
 {
-	fd = open("/dev/audio", OWRITE);
-	if(fd < 0)
-		return;
+	// fd = open("/dev/audio", OWRITE);
+	// if(fd < 0)
+	// 	return;
 	sbufp = sbuf;
 }
