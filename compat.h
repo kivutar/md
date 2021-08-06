@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-#define sysfatal printf
+#define sysfatal(fmt, ...)({printf(fmt"\n", ##__VA_ARGS__); exit(EXIT_FAILURE);})
 #define print printf
 #define seek lseek
 #define nil NULL
@@ -10,8 +11,8 @@
 #define OEXCL O_EXCL
 #define	nelem(x) (sizeof(x)/sizeof((x)[0]))
 
+int readn(int f, void *data, int len);
+
 u64int keys, keys2;
 int trace;
-int savereq, loadreq;
-int warp10;
 uchar *pic;

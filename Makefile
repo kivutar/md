@@ -2,7 +2,7 @@ SHARED := -dynamiclib
 TARGET := md_libretro.dylib
 CFLAGS += -O3
 
-OBJ = cpu.o mem.o vdp.o z80.o ym.o md.o
+OBJ = cpu.o mem.o vdp.o z80.o ym.o md.o compat.c
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)

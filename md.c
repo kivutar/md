@@ -25,21 +25,6 @@ int doflush = 0;
 
 int dmaclock, vdpclock, z80clock, audioclock, ymclock, saveclock;
 
-int
-readn(int f, void *data, int len)
-{
-	uchar *p, *e;
-
-	p = data;
-	e = p + len;
-	while(p < e){
-		if((len = read(f, p, e - p)) <= 0)
-			break;
-		p += len;
-	}
-	return p - (uchar*)data;
-}
-
 void
 flushram(void)
 {
@@ -169,8 +154,8 @@ retro_load_game(const struct retro_game_info *game)
 		return false;
 
 	pic = malloc(320 * 224 * 4);
-	loadrom(game->path);
 	initaudio();
+	loadrom(game->path);
 	cpureset();
 	vdpmode();
 	ymreset();
