@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define sysfatal(fmt, ...)({printf(fmt"\n", ##__VA_ARGS__); exit(EXIT_FAILURE);})
+#define sysfatal(fmt, ...){printf(fmt"\n", ##__VA_ARGS__); exit(EXIT_FAILURE);}
 #define print printf
 #define seek lseek
 #define nil NULL
