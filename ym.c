@@ -428,7 +428,7 @@ audiosample(void)
 	}
 }
 
-extern retro_audio_sample_batch_t audio_sample_batch_cb;
+extern retro_audio_sample_batch_t audio_cb;
 
 int
 audioout(void)
@@ -440,7 +440,7 @@ audioout(void)
 	if(sbufp == sbuf)
 		return 0;
 	//rc = warp10 ? (sbufp - sbuf) * 2 : write(fd, sbuf, (sbufp - sbuf) * 2);
-	audio_sample_batch_cb(sbuf, (sbufp - sbuf) / 2);
+	audio_cb(sbuf, (sbufp - sbuf) / 2);
 	rc = (sbufp - sbuf) * 2;
 	if(rc > 0)
 		sbufp -= (rc+1)/2;
