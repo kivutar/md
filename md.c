@@ -164,10 +164,35 @@ retro_load_game(const struct retro_game_info *game)
 	return true;
 }
 
+static const int map[] = {
+	[RETRO_DEVICE_ID_JOYPAD_B] = 1<<5, // BUTTON_A
+	[RETRO_DEVICE_ID_JOYPAD_Y] = 0, // BUTTON_X
+	[RETRO_DEVICE_ID_JOYPAD_SELECT] = 0, // BUTTON_MODE
+	[RETRO_DEVICE_ID_JOYPAD_START] = 1<<13, // BUTTON_START
+	[RETRO_DEVICE_ID_JOYPAD_UP] = 0x101, // DPAD_UP
+	[RETRO_DEVICE_ID_JOYPAD_DOWN] = 0x202, // DPAD_DOWN
+	[RETRO_DEVICE_ID_JOYPAD_LEFT] = 1<<2, // DPAD_LEFT
+	[RETRO_DEVICE_ID_JOYPAD_RIGHT] = 1<<3, // DPAD_RIGHT
+	[RETRO_DEVICE_ID_JOYPAD_A] = 1<<4, // BUTTON_B
+	[RETRO_DEVICE_ID_JOYPAD_X] = 1<<12, // BUTTON_Y
+	[RETRO_DEVICE_ID_JOYPAD_L] = 0, // BUTTON_Z
+	[RETRO_DEVICE_ID_JOYPAD_R] = 0 // BUTTON_C
+};
+
+void
+process_inputs()
+{
+	keys = 0;
+	for(int id = RETRO_DEVICE_ID_JOYPAD_B; id < RETRO_DEVICE_ID_JOYPAD_L2; id++)
+		if(input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, id))
+			keys ^= map[id];
+}
+
 void
 retro_run(void)
 {
 	input_poll_cb();
+	process_inputs();
 
 	while(!doflush){
 		if(dma != 1){
