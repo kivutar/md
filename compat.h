@@ -12,7 +12,3 @@
 #define	nelem(x) (sizeof(x)/sizeof((x)[0]))
 
 int readn(int f, void *data, int len);
-
-u64int keys, keys2;
-int trace;
-uchar *pic;

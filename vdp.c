@@ -3,6 +3,8 @@
 #include "dat.h"
 #include "fns.h"
 
+extern uchar *pic;
+
 u16int vdpstat = 0x3400;
 int vdpx, vdpy, vdpyy, frame, intla;
 u16int hctr;

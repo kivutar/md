@@ -19,6 +19,7 @@ u32int irqla[8];
 u16int rS;
 static u32int op;
 int tim;
+int trace;
 #define ra (r+8)
 
 static void

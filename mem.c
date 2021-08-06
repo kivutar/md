@@ -3,6 +3,8 @@
 #include "dat.h"
 #include "fns.h"
 
+extern u64int keys, keys2;
+
 u16int ram[32768], vram[32768];
 u16int cram[64], vsram[40];
 u32int cramc[64];

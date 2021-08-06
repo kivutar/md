@@ -9,7 +9,7 @@ else ifneq ($(findstring Darwin,$(shell uname -s)),) # osx
 	TARGET := md_libretro.dylib
 endif
 
-CFLAGS += -O3
+CFLAGS += -O3 -fPIC -flto
 
 OBJ = cpu.o mem.o vdp.o z80.o ym.o md.o compat.o
 
@@ -17,7 +17,7 @@ OBJ = cpu.o mem.o vdp.o z80.o ym.o md.o compat.o
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(TARGET): $(OBJ)
-	$(CC) $(SHARED) -fPIC -flto -o $@ $^ $(CFLAGS)
+	$(CC) $(SHARED) -o $@ $^ $(CFLAGS)
 
 clean:
 	rm $(OBJ) $(TARGET)
