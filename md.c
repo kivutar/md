@@ -164,7 +164,7 @@ retro_load_game(const struct retro_game_info *game)
 	return true;
 }
 
-static const int map[] = {
+static const int bind[] = {
 	[RETRO_DEVICE_ID_JOYPAD_B] = 1<<5, // BUTTON_A
 	[RETRO_DEVICE_ID_JOYPAD_Y] = 0, // BUTTON_X
 	[RETRO_DEVICE_ID_JOYPAD_SELECT] = 0, // BUTTON_MODE
@@ -183,9 +183,9 @@ void
 process_inputs()
 {
 	keys = 0;
-	for(int id = RETRO_DEVICE_ID_JOYPAD_B; id < RETRO_DEVICE_ID_JOYPAD_L2; id++)
+	for(int id = 0; id < RETRO_DEVICE_ID_JOYPAD_L2; id++)
 		if(input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, id))
-			keys ^= map[id];
+			keys ^= bind[id];
 }
 
 void
