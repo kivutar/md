@@ -411,17 +411,17 @@ z80write(u16int a, u8int v)
 }
 
 u8int
-z80in(u8int)
+z80in(u8int a)
 {
 	return 0xff;
 }
 
 void
-z80out(u8int, u8int)
+z80out(u8int a, u8int b)
 {
 }
 
-u32int irql[8] = {[6] INTVBL, [4] INTHOR};
+u32int irql[8] = {[6] = INTVBL, [4] = INTHOR};
 
 int
 intack(int l)
