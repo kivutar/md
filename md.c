@@ -22,7 +22,7 @@ u8int *sram;
 u32int sramctl, nsram, sram0, sram1;
 int savefd = -1;
 int doflush = 0;
-u64int keys[2];
+u16int keys[2];
 uchar *pic;
 
 int dmaclock, vdpclock, z80clock, audioclock, ymclock, saveclock;
