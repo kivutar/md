@@ -3,7 +3,7 @@
 #include "dat.h"
 #include "fns.h"
 
-extern u64int keys, keys2;
+extern u64int keys[2];
 
 u16int ram[32768], vram[32768];
 u16int cram[64], vsram[40];
@@ -32,11 +32,15 @@ regread(u16int a)
 	switch(a | 1){
 	case 0x0001: return 0xa0;
 	case 0x0003:
-		v = ~(keys & 0xffff);
+		v = ~(keys[0] & 0xffff);
 		if((ctl[0] & 0x40) == 0)
 			v >>= 8;
 		return ctl[0] & 0xc0 | v & 0x3f;
 	case 0x0005:
+		v = ~(keys[1] & 0xffff);
+		if((ctl[1] & 0x40) == 0)
+			v >>= 8;
+		return ctl[1] & 0xc0 | v & 0x3f;
 	case 0x0007:
 		return ctl[a-3>>1] & 0xc0 | 0x3f;
 	case 0x0009: case 0x000b: case 0x000d:
