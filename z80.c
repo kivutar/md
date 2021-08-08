@@ -4,7 +4,7 @@
 #include "dat.h"
 #include "fns.h"
 
-u8int s[16], ipage, intm, z80irq;
+u8int s[16], ipage, rpage, intm, z80irq;
 u16int ix[2];
 u16int spc, scurpc, sp;
 int halt;
@@ -503,7 +503,8 @@ ed(void)
 	case 0x7b: sp = read16(fetch16()); return 20;
 	case 0x4d: spc = pop16(); return 14;
 	case 0x5e: intm = intm & 0xc0 | 2; return 8;
-	case 0x4f: return 9;
+	case 0x4f: rpage = s[rA]; return 9;
+	case 0x5f: s[rA] = rpage; return 9;
 	}
 	sysfatal("undefined z80 opcode ed%.2x at pc=%#.4x", op, scurpc);
 	return 0;
@@ -595,6 +596,7 @@ z80step(void)
 		scurpc = spc = 0;
 		intm = 0;
 		ipage = 0;
+		rpage = 0;
 		return 1;
 	}
 	if((z80bus & BUSACK) != 0){
