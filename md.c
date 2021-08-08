@@ -22,7 +22,7 @@ u8int *sram;
 u32int sramctl, nsram, sram0, sram1;
 int savefd = -1;
 int doflush = 0;
-u64int keys, keys2;
+u16int keys[2];
 uchar *pic;
 
 int dmaclock, vdpclock, z80clock, audioclock, ymclock, saveclock;
@@ -182,10 +182,13 @@ static const int bind[] = {
 void
 process_inputs()
 {
-	keys = 0;
-	for(int id = 0; id < RETRO_DEVICE_ID_JOYPAD_L2; id++)
-		if(input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, id))
-			keys ^= bind[id];
+	for(int p = 0; p < 2; p++)
+	{
+		keys[p] = 0;
+		for(int id = 0; id < RETRO_DEVICE_ID_JOYPAD_L2; id++)
+			if(input_state_cb(p, RETRO_DEVICE_JOYPAD, 0, id))
+				keys[p] ^= bind[id];
+	}
 }
 
 void
