@@ -502,7 +502,7 @@ cpureset(void)
 }
 
 int
-step(void)
+cpustep(void)
 {
 	u32int v, w;
 	vlong a;

@@ -1,7 +1,7 @@
 u16int memread(u32int);
 void memwrite(u32int, u16int, u16int);
 void cpureset(void);
-int step(void);
+int cpustep(void);
 int z80step(void);
 u8int z80read(u16int);
 void z80write(u16int, u8int);

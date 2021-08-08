@@ -199,7 +199,7 @@ retro_run(void)
 
 	while(!doflush){
 		if(dma != 1){
-			t = step() * CPUDIV;
+			t = cpustep() * CPUDIV;
 			if(dma != 0)
 				dmastep();
 		}else{
