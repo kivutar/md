@@ -25,7 +25,7 @@ int doflush = 0;
 u16int keys[2];
 uchar *pic;
 
-int dmaclock, vdpclock, z80clock, audioclock, ymclock, saveclock;
+int dmaclock, vdpclock, z80clock, audioclock, ymclock, saveclock = 0;
 
 void
 flushram(void)
