@@ -55,7 +55,7 @@ static void
 loadrom(const void *data)
 {
 	static uchar hdr[512], buf[4096];
-	u32int v;
+	u32int v, offset = 0;
 	u16int *p;
 	int rc, i;
 	
@@ -72,12 +72,14 @@ loadrom(const void *data)
 	p = prg = malloc(v);
 	if(prg == nil)
 		sysfatal("malloc\n");
+	
 	while(v != 0){
 		rc = sizeof buf;
-		memcpy(buf, data, rc);
+		memcpy(buf, data+offset, rc);
 		for(i = 0; i < rc; i += 2)
 			*p++ = buf[i] << 8 | buf[i+1];
 		v -= rc;
+		offset += rc;
 	}
 	if(hdr[0x1b0] == 0x52 && hdr[0x1b1] == 0x41){
 		sramctl = SRAM | hdr[0x1b2] >> 1 & ADDRMASK;
