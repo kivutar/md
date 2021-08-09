@@ -14,7 +14,7 @@ endif
 
 CFLAGS += -O3 -fPIC -flto
 
-OBJ = cpu.o mem.o vdp.o z80.o ym.o md.o compat.o
+OBJ = cpu.o mem.o vdp.o z80.o ym.o md.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)

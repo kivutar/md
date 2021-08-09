@@ -10,5 +10,3 @@
 #define OREAD O_RDONLY
 #define OEXCL O_EXCL
 #define	nelem(x) (sizeof(x)/sizeof((x)[0]))
-
-int readn(int f, void *data, int len);

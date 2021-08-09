@@ -36,12 +36,12 @@ flushram(void)
 }
 
 static void
-loadbat(const char *file)
+loadbat(const char *data)
 {
 	static char buf[512];
 	
-	strncpy(buf, file, sizeof buf - 5);
-	strcat(buf, ".sav");
+	// strncpy(buf, file, sizeof buf - 5);
+	// strcat(buf, ".sav");
 	// savefd = create(buf, ORDWR | OEXCL);
 	// if(savefd < 0)
 	// 	savefd = open(buf, ORDWR);
@@ -52,18 +52,14 @@ loadbat(const char *file)
 }
 
 static void
-loadrom(const char *file)
+loadrom(const void *data)
 {
 	static uchar hdr[512], buf[4096];
-	u32int v;
+	u32int v, offset = 0;
 	u16int *p;
-	int fd, rc, i;
+	int rc, i;
 	
-	fd = open(file, OREAD);
-	if(fd < 0)
-		sysfatal("open\n");
-	if(readn(fd, hdr, 512) < 512)
-		sysfatal("read\n");
+	memcpy(hdr, data, sizeof(hdr));
 	if(memcmp(hdr + 0x100, "SEGA MEGA DRIVE ", 16) != 0 && memcmp(hdr + 0x100, "SEGA GENESIS    ", 16) != 0)
 		sysfatal("invalid rom\n");
 	v = hdr[0x1a0] << 24 | hdr[0x1a1] << 16 | hdr[0x1a2] << 8 | hdr[0x1a3];
@@ -76,20 +72,15 @@ loadrom(const char *file)
 	p = prg = malloc(v);
 	if(prg == nil)
 		sysfatal("malloc\n");
-	seek(fd, 0, 0);
+	
 	while(v != 0){
-		rc = readn(fd, buf, sizeof buf);
-		if(rc == 0)
-			break;
-		if(rc < 0)
-			sysfatal("read\n");
-		if(rc > v)
-			rc = v;
+		rc = sizeof buf;
+		memcpy(buf, data+offset, rc);
 		for(i = 0; i < rc; i += 2)
 			*p++ = buf[i] << 8 | buf[i+1];
 		v -= rc;
+		offset += rc;
 	}
-	close(fd);
 	if(hdr[0x1b0] == 0x52 && hdr[0x1b1] == 0x41){
 		sramctl = SRAM | hdr[0x1b2] >> 1 & ADDRMASK;
 		if((hdr[0x1b2] & 0x40) != 0)
@@ -107,7 +98,7 @@ loadrom(const char *file)
 			if(sram == nil)
 				sysfatal("malloc\n");
 			if((sramctl & BATTERY) != 0){
-				loadbat(file);
+				loadbat(data);
 				atexit(flushram);
 			}
 		}
@@ -125,7 +116,7 @@ retro_get_system_info(struct retro_system_info *info)
 	memset(info, 0, sizeof(*info));
 	info->library_name = "md";
 	info->library_version = "1.0";
-	info->need_fullpath = true;
+	info->need_fullpath = false;
 	info->valid_extensions = "md|bin";
 }
 
@@ -157,7 +148,7 @@ retro_load_game(const struct retro_game_info *game)
 
 	pic = malloc(320 * 224 * 4);
 	initaudio();
-	loadrom(game->path);
+	loadrom(game->data);
 	cpureset();
 	vdpmode();
 	ymreset();
