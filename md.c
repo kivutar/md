@@ -30,8 +30,8 @@ int dmaclock, vdpclock, z80clock, audioclock, ymclock, saveclock = 0;
 void
 flushram(void)
 {
-	if(savefd >= 0)
-		pwrite(savefd, sram, nsram, 0);
+	//if(savefd >= 0)
+	//	pwrite(savefd, sram, nsram, 0);
 	saveclock = 0;
 }
 
