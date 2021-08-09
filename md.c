@@ -79,7 +79,6 @@ loadrom(const void *data)
 			*p++ = buf[i] << 8 | buf[i+1];
 		v -= rc;
 	}
-	printf("%d %d %d %d\n", prg[0], prg[1], prg[2], prg[3]);
 	if(hdr[0x1b0] == 0x52 && hdr[0x1b1] == 0x41){
 		sramctl = SRAM | hdr[0x1b2] >> 1 & ADDRMASK;
 		if((hdr[0x1b2] & 0x40) != 0)
